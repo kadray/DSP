@@ -51,10 +51,17 @@ figure(4)
 for k=f_c
     w=2*pi*k;
     wave=sin(w*t);
-    plot( t, wave, "r-");
+    plot(t, wave, "r-");
     title("Iteracja: "+ (k/5 +1) +", "+ "Częstotliwość: "+k + " Hz")
     pause;
 end
 %------------------------
-
-
+figure(5)
+plot(t, sin(2*pi*5*t),t, sin(2*pi*105*t),t, sin(2*pi*205*t))
+pause;
+figure(6)
+plot(t, sin(2*pi*95*t),t, sin(2*pi*195*t),t, sin(2*pi*295*t))
+pause;
+figure(7)
+plot(t, sin(2*pi*95*t),t, sin(2*pi*105*t))
+pause;
