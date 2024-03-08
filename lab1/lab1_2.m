@@ -11,7 +11,7 @@ T_signal=1/f_signal;
 t_signal=0:T_signal:1;
 wave=A*sin(w*t_signal);
 figure(1)
-plot(t_signal, wave, "b-o")
+plot(t_signal, wave, "bo")
 hold on
 
 f_sampling=10000;
@@ -30,5 +30,11 @@ for idx = 1:length(t_sampling)
         xhat(idx)=xhat(idx)+wave(k)*smp;
     end
 end
+figure(1)
 plot(t_sampling, xhat, "r-")
 legend("sygnał dany", "sygnał odtworzony")
+pause;
+x_original=A*sin(w*t_sampling);
+errors=abs(x_original-xhat);
+figure(2)
+plot(t_sampling, errors)
