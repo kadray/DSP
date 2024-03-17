@@ -55,5 +55,18 @@ plt.title('Porównanie widm $X_1$, $X_2$ i $X_3$')
 plt.legend()
 plt.grid()
 plt.xlim(0, fs / 2)  # Ograniczenie widoczności do pasma Nyquista
-plt.show()
 
+
+fx3=np.arange(-2000, 2000, 0.25)
+X3=dtft(x_t, fx3, fs)
+plt.figure(figsize=(10, 6))
+plt.plot(fx1, np.abs(X2[:N]), 'o', label='$X_1$ (DFT)')
+plt.plot(fx2, np.abs(X2), 'bx', label='$X_2$ (FFT z dodaniem zer)')
+plt.plot(fx3, np.abs(X3), 'k-', label='$X_3$ (DtFT)')
+plt.xlabel('Częstotliwość [Hz]')
+plt.ylabel('Amplituda')
+plt.title('Porównanie widm $X_1$, $X_2$ i $X_3$')
+plt.legend()
+plt.grid()
+plt.xlim(0, fs / 2)  # Ograniczenie widoczności do pasma Nyquista
+plt.show()

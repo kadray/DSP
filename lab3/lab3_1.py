@@ -1,10 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Definicja funkcji do obliczenia sygnału x(t)
-def x(t, A1, f1, phi1, A2, f2, phi2):
-    return A1 * np.cos(2 * np.pi * f1 * t + phi1) + A2 * np.cos(2 * np.pi * f2 * t + phi2)
-
 # Parametry sygnału
 A1 = 100
 f1 = 100
@@ -26,12 +22,12 @@ A=DFT_matrix(N)
 t = np.arange(N) / fs
 
 # Obliczanie sygnału x(t)
-x_t = x(t, A1, f1, phi1, A2, f2, phi2)
+x_t = x_t = A1 * np.cos(2 * np.pi * f1 * t + phi1) + A2 * np.cos(2 * np.pi * f2 * t + phi2)
 
 # Obliczanie DFT sygnału x(t)
 X = np.dot(A, x_t)
 # Wyliczanie widma
-freq = np.fft.fftfreq(N, 1 / fs)
+freq= np.arange(N)* fs/N
 real_part = np.real(X)
 imaginary_part = np.imag(X)
 magnitude = np.abs(X)
@@ -59,7 +55,7 @@ plt.xlabel('Częstotliwość [Hz]')
 plt.grid()
 
 plt.subplot(2, 2, 4)
-plt.phase_spectrum(X, color='green')
+plt.phase_spectrum(t, X, color='green')
 plt.title('Faza')
 plt.xlabel('Częstotliwość [Hz]')
 plt.grid()
@@ -95,4 +91,6 @@ plt.ylabel('Amplituda')
 plt.title('Porównanie oryginalnego sygnału z zrekonstruowanym używając FFT')
 plt.legend()
 plt.grid()
+
+
 plt.show()
