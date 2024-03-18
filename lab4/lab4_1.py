@@ -11,7 +11,8 @@ def radix2(x):
     Z = np.exp(-2j * np.pi * np.arange(N) / N)
     X = np.concatenate([X1 + Z[:N // 2] * X2, X1 + Z[N // 2:] * X2])
     return X
-x = np.random.randn(256)  # Przykładowe dane wejściowe
+  
+x = np.random.randn(1024)  # Przykładowe dane wejściowe
 X = radix2(x)
 print(X)
 x_rec=np.fft.ifft(X)
@@ -23,7 +24,7 @@ for i in range(0, 15):
     N = pow(2, i)
     x = np.random.rand(N)
     X_fft = np.fft.fft(x)   # oryginalne DFT
-    X_dit = radix2(x)          # DFT sklejane z dwóch połówek (1 etap podziału)
+    X_dit = radix2(x)          # DFT sklejane z dwóch połówek 
     errors.append(np.mean(np.abs(X_fft-X_dit)))
     print("Błąd DFT - DiT: " , errors[i]) 
 
