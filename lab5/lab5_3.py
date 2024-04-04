@@ -39,6 +39,9 @@ for response, label in zip(
         [frequency_response_butter, frequency_response_cheby1, frequency_response_cheby2, frequency_response_ellip], 
         ["Butter", "Czeby1", "Czeby2", "Elipt"]):
     plt.plot(w / (2 * np.pi * 1e3), 20 * np.log10(np.abs(response[1]) + 1e-12), label=label) 
+plt.plot([64, 64], [10, -100], "r--")
+plt.plot([128, 128], [10, -100], "r--")
+plt.plot([0, 1280], [-3, -3], "b--")
 plt.axis([0, 256, -40, 5])
 plt.grid(True)
 plt.title("Odpowiedź częstotliwościowa modelów")
