@@ -15,6 +15,7 @@ freq_128 = 128e3
 
 # Butterworth Filter Design
 z_butter, p_butter, k_butter = butter(N=7, Wn=2 * np.pi * freq_64, analog=True, output='zpk')
+print(z_butter, p_butter, k_butter)
 b_butter, a_butter = zpk2tf(z_butter, p_butter, k_butter)
 frequency_response_butter = freqs(b_butter, a_butter, w)
 
