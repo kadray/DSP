@@ -4,12 +4,11 @@ import matplotlib.pyplot as plt
 
 # Ustawienia początkowe
 points = 4096
-N = 4  # Maksymalny rząd filtra ustawiony na 4
-width=100
-#width=1000
+N = 4  
+band_width=75 #dla +- 100 kHz
 band_center = 96
 mid_freq = 2 * np.pi * 1e6 * band_center  # Przeliczenie na radiany/s
-band_width = width/2
+
 tollerance = 2 * np.pi * 1e3 * band_width  # Przeliczenie na radiany/s
 
 # Zakres częstotliwości
@@ -25,7 +24,8 @@ be, ae = zpk2tf(ze, pe, ke)
 he = freqs(be, ae, w)
 
 
-plt.plot(w / (2 * np.pi * 1e6), 20 * np.log10(np.abs(he[1])), )
+plt.plot(w / (2 * np.pi * 1e6), 20 * np.log10(np.abs(he[1])),)
+plt.plot([95, 97], [-40 ,-40])
 plt.axis([band_center - 2 * band_width / 1e3, band_center + 2 * band_width / 1e3, -45, 5])
 plt.grid(True)
 plt.title("Odpowiedź częstotliwościowa")
