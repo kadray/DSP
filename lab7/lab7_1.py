@@ -14,15 +14,10 @@ f_low = fc - df / 2
 f_high = fc + df / 2
 # Projektowanie filtrów
 def design_filter(window_type):
-    # Obliczenie granicznych częstotliwości
-
-
     # Obliczenie współczynników filtra FIR
     h = firwin(N, [f_low, f_high], fs=fs, pass_zero=False, window=window_type)
-
     # Obliczenie charakterystyki częstotliwościowej filtra
     w, h_freqz = freqz(h, 1, worN=2000)
-
     # Obliczenie poziomu tłumienia w paśmie zaporowym
     stop_band_attenuation = -20 * np.log10(min(abs(h_freqz)))
 
@@ -41,28 +36,31 @@ for window_type in window_types:
 plt.figure(figsize=(12, 6))
 for window_type, result in results.items():
     plt.plot(result['w'] * fs / (2 * np.pi), 20 * np.log10(abs(result['h_freqz'])), label=window_type)
-plt.ylim(-40, 10)
+plt.ylim(-100, 10)
 plt.title('Charakterystyka amplitudowo-częstotliwościowa')
 plt.xlabel('Częstotliwość [Hz]')
 plt.ylabel('Amplituda [dB]')
 plt.legend()
 plt.grid()
-plt.show()
+
 
 # Wyświetlenie charakterystyk fazowo-częstotliwościowych
 plt.figure(figsize=(12, 6))
+idx=1
 for window_type, result in results.items():
+    plt.subplot(5, 1, idx)
+    idx+=1
     plt.plot(result['w'] * fs / (2 * np.pi), np.angle(result['h_freqz']), label=window_type)
+    plt.legend()
 plt.title('Charakterystyka fazowo-częstotliwościowa')
 plt.xlabel('Częstotliwość [Hz]')
 plt.ylabel('Faza [rad]')
-plt.legend()
 plt.grid()
-plt.show()
 
-# Wyświetlenie poziomu tłumienia w paśmie zaporowym
-for window_type, result in results.items():
-    print(f"Okno {window_type}: Poziom tłumienia w paśmie zaporowym = {result['stop_band_attenuation']:.2f} dB")
+
+# # Wyświetlenie poziomu tłumienia w paśmie zaporowym
+# for window_type, result in results.items():
+#     print(f"Okno {window_type}: Poziom tłumienia w paśmie zaporowym = {result['stop_band_attenuation']:.2f} dB")
 
 # Generowanie sygnału testowego
 t = np.arange(0, 1, 1/fs)
@@ -76,15 +74,23 @@ for window_type, result in results.items():
 
 # Wyświetlenie sygnału przed i po filtracji
 plt.figure(figsize=(12, 6))
-plt.plot(t, x, label='Sygnał wejściowy')
+
+idx=1
 for window_type, filtered_signal in filtered_signals.items():
+    plt.subplot(5, 1, idx)
+    idx+=1
+    plt.plot(t, x, label='Sygnał wejściowy')
     plt.plot(t, filtered_signal, label=window_type)
+    plt.legend()
 plt.title('Sygnał przed i po filtracji')
 plt.xlabel('Czas [s]')
 plt.ylabel('Amplituda')
-plt.legend()
 plt.grid()
-plt.show()
+
+
+# Wyświetlenie poziomu tłumienia w paśmie zaporowym
+for window_type, result in results.items():
+    print(f"Okno {window_type}: Poziom tłumienia w paśmie zaporowym = {result['stop_band_attenuation']:.2f} dB")
 
 # Obliczenie widma gęstości mocy sygnału przed i po filtracji
 frequencies = np.fft.rfftfreq(len(x), d=1/fs)
