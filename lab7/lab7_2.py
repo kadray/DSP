@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # Parametry filtru FIR 1
 nyquist_rate = 48000  # Próbkowanie 48 kHz, więc Nyquist to 24 kHz
-cutoff_freq = 18300.0  # Górna częstotliwość w Hz
+cutoff_freq = 18000.0  # Górna częstotliwość w Hz
 num_taps = 101  # Długość odpowiedzi impulsowej filtra FIR
 
 # Projektowanie filtru FIR 1
@@ -31,7 +31,7 @@ delay_fir2 = (taps_fir2 - 1) / (2 * fs)  # Opóźnienie grupowe w sekundach
 t = np.linspace(0, 1, fs, endpoint=False)  # Wektor czasu
 
 # Dodatkowe składowe sygnału
-frequencies = np.linspace(30, 25000, 50)  # 10 częstotliwości od 30 Hz do 25000 Hz
+frequencies = np.linspace(30, 25000, 100)  # 10 częstotliwości od 30 Hz do 25000 Hz
 additional_components = [np.sin(2 * np.pi * f * t) for f in frequencies]
 
 # Sygnał zawierający dodatkowe składowe
@@ -89,7 +89,8 @@ plt.plot(0.5 * nyquist_rate * w1 / np.pi, 20 * np.log10(np.abs(h1)), 'b', label=
 plt.plot(freq_fir1, 20 * np.log10(np.abs(h1)), 'b--')
 plt.plot(freq_fir2, 20 * np.log10(np.abs(h2)), 'r', label='FIR 2')
 plt.plot([19000, 19000], [-60, 10], 'ko--', label='Pilotażowa częstotliwość 19000 Hz')
-plt.ylim(-60, 10)
+plt.plot([0, 25000], [-40, -40], "g--")
+plt.ylim(-100, 10)
 plt.title("Charakterystyka częstotliwościowa filtrów FIR")
 plt.xlabel('Częstotliwość [Hz]')
 plt.ylabel('Amplituda [dB]')

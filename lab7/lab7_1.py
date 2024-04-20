@@ -36,7 +36,7 @@ for window_type in window_types:
 plt.figure(figsize=(12, 6))
 for window_type, result in results.items():
     plt.plot(result['w'] * fs / (2 * np.pi), 20 * np.log10(abs(result['h_freqz'])), label=window_type)
-plt.ylim(-100, 10)
+plt.ylim(-200, 10)
 plt.title('Charakterystyka amplitudowo-częstotliwościowa')
 plt.xlabel('Częstotliwość [Hz]')
 plt.ylabel('Amplituda [dB]')

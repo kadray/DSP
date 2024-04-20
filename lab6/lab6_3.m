@@ -74,7 +74,7 @@ title('Charakterystyka czasowo-częstotliwościowa sygnału po demodulacji');
 subplot(2, 1, 2);
 psd(spectrum.welch('Hamming', 1024), y, 'Fs', fs/bwSERV);
 title('Widmo gęstości mocy sygnału po demodulacji');
-
+disp(y)
 % Charakterystyka czasowo-częstotliwościowa i widmo gęstości mocy sygnału po filtracji antyaliasingowej
 figure;
 subplot(2, 1, 1);
