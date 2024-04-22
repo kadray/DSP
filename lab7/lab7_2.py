@@ -1,19 +1,57 @@
 import numpy as np
-import scipy
-from scipy.signal import firwin, freqz, lfilter
+import scipy.signal as signal
 import matplotlib.pyplot as plt
+from scipy.io import wavfile
 
-# Parametry filtru FIR 1
-nyquist_rate = 48000  # Próbkowanie 48 kHz, więc Nyquist to 24 kHz
-cutoff_freq = 18000.0  # Górna częstotliwość w Hz
+fs = 3.2e6        # częstotliwość próbkowania
+N = 32e6          # liczba próbek (IQ)
+fc = 0.39e6       # częstotliwość centralna stacji MF
+bwSERV = 80e3     # szerokość pasma usługi FM
+bwAUDIO = 16e3    # szerokość pasma audio FM
+
+# Odczytanie surowych próbek IQ
+with open('samples_100MHz_fs3200kHz.raw', 'rb') as f:
+    s = np.fromfile(f, dtype=np.uint8)
+
+s = s - 127
+
+# IQ do postaci zespolonej
+wideband_signal = s[::2] + 1j * s[1::2]
+# Przesunięcie do pasma podstawowego
+wideband_signal_shifted = wideband_signal * np.exp(-1j * 2 * np.pi * fc / fs * np.arange(N))
+# Filtracja stacji
+b, a = signal.butter(4, bwSERV / fs)
+wideband_signal_filtered = signal.lfilter(b, a, wideband_signal_shifted)
+
+# Próbkowanie do szerokości pasma usługi
+x = wideband_signal_filtered[::int(fs / (bwSERV * 2))]
+
+# Demodulacja FM
+dx = x[1:] * np.conj(x[:-1])
+y = np.angle(dx)
+# Filtracja antyaliasingowa i dekodowanie do szerokości pasma audio
+Wn_down = (15e3 * 2) / (bwSERV * 2)
+b_down = signal.firwin(129, Wn_down, nyq=bwSERV, window='blackmanharris')
+y_audio = signal.lfilter(b_down, 1, y)
+
+# Widmo mocy sygnału demodulowanego
+frequencies, psd = signal.welch(y, fs=bwSERV*2, window='hamming', nperseg=1024)
+plt.figure()
+plt.plot(frequencies, np.log10(np.abs(psd)))
+plt.title('Widmo mocy sygnału demodulowanego')
+plt.xlabel('Częstotliwość [Hz]')
+plt.ylabel('Gęstość mocy')
+
+fs = 48000 
+# Filtr dolnoprzepustowy do 19 kHz
+cutoff_1 = 18000.0  # Górna częstotliwość w Hz
 num_taps = 101  # Długość odpowiedzi impulsowej filtra FIR
-
 # Projektowanie filtru FIR 1
-nyquist_cutoff = cutoff_freq / (0.5 * nyquist_rate)
-taps_fir1 = firwin(num_taps, nyquist_cutoff, window='hamming', pass_zero=True)
+nyquist_cutoff = cutoff_1 / (0.5 * fs)
+fir1 = signal.firwin(num_taps, nyquist_cutoff, window='hamming')
 
-# Parametry filtru FIR 2
-fs = 48000  # Częstotliwość próbkowania
+# Filtr pasmowoprzepustowy w obrębie 19 kHz
+
 f_pilot = 19000  # Częstotliwość sygnału pilota
 f_bandwidth = 1000  # Szerokość pasma filtru (1 kHz)
 taps_fir2 = 101  # Długość odpowiedzi impulsowej (nieparzysta dla zachowania symetrii)
@@ -22,78 +60,37 @@ taps_fir2 = 101  # Długość odpowiedzi impulsowej (nieparzysta dla zachowania 
 nyquist = 0.5 * fs
 cutoff = f_pilot / nyquist
 width = f_bandwidth / nyquist
-coefficients_fir2 = firwin(taps_fir2, [cutoff - 0.5 * width, cutoff + 0.5 * width], pass_zero=False)
+fir2 = signal.firwin(taps_fir2, [cutoff - 0.5 * width, cutoff + 0.5 * width], pass_zero=False)
 
-# Korekcja opóźnienia dla filtru FIR 2
-delay_fir2 = (taps_fir2 - 1) / (2 * fs)  # Opóźnienie grupowe w sekundach
+# Obliczenie odpowiedzi filtrów w dziedzinie częstotliwości
+w_lowpass, h_lowpass = signal.freqz(fir1, worN=1599999)
+w_bandpass, h_bandpass = signal.freqz(fir2, worN=1599999)
+freq_fir1 = (fs * 0.5 / np.pi) * w_lowpass
+freq_fir2 = (fs * 0.5 / np.pi) * w_bandpass
+# Plot odpowiedzi filtrów w dziedzinie częstotliwości
+plt.figure(figsize=(10, 6))
 
-# Generowanie zróżnicowanego sygnału sinusoidalnego
-t = np.linspace(0, 1, fs, endpoint=False)  # Wektor czasu
+plt.plot(0.5 * fs * w_lowpass / np.pi, np.log10(np.abs(h_lowpass)), label='Filtr dolnoprzepustowy')
+plt.title('Charakterystyka amplitudowa filtru dolnoprzepustowego')
+plt.xlabel('Częstotliwość [Hz]')
+plt.ylabel('Wzmocnienie')
+plt.legend()
 
-# Dodatkowe składowe sygnału
-frequencies = np.linspace(30, 25000, 100)  # 10 częstotliwości od 30 Hz do 25000 Hz
-additional_components = [np.sin(2 * np.pi * f * t) for f in frequencies]
+plt.figure(figsize=(10, 6))
+plt.plot(0.5 * fs * w_bandpass / np.pi, np.log10(np.abs(h_bandpass)), label='Filtr pasmowoprzepustowy')
+plt.title('Charakterystyka amplitudowa filtru pasmowoprzepustowego')
+plt.xlabel('Częstotliwość [Hz]')
+plt.ylabel('Wzmocnienie')
+plt.legend()
 
-# Sygnał zawierający dodatkowe składowe
-signal = np.sum(additional_components, axis=0)
 
 # Filtracja sygnału przez oba filtry
-filtered_signal_fir1 = lfilter(taps_fir1, 1, signal)
-filtered_signal_fir2 = lfilter(coefficients_fir2, 1, signal)
-
-# Wykres odpowiedzi częstotliwościowej filtrów FIR
-w1, h1 = freqz(taps_fir1, worN=8000)
-w2, h2 = freqz(coefficients_fir2, worN=8000)
-freq_fir1 = (nyquist_rate * 0.5 / np.pi) * w1
-freq_fir2 = (fs * 0.5 / np.pi) * w2
-
-# Plotowanie sygnału i wyników filtracji
-plt.figure(figsize=(12, 10))
-
-plt.subplot(3, 2, 1)
-plt.plot(t, signal, 'b')
-plt.title('Zróżnicowany sygnał wejściowy')
-plt.xlabel('Czas [s]')
-plt.ylabel('Amplituda')
-
-plt.subplot(3, 2, 2)
-plt.magnitude_spectrum(signal, Fs=nyquist_rate, color='blue')
-plt.title('Spektrum sygnału wejściowego')
-
-plt.subplot(3, 2, 3)
-plt.plot(t, filtered_signal_fir1, 'r')
-plt.title('Sygnał po filtracji FIR 1')
-plt.xlabel('Czas [s]')
-plt.ylabel('Amplituda')
-
-plt.subplot(3, 2, 4)
-plt.magnitude_spectrum(filtered_signal_fir1, Fs=nyquist_rate, color='red')
-plt.title('Spektrum sygnału po filtracji FIR 1')
-
-plt.subplot(3, 2, 5)
-plt.plot(t, filtered_signal_fir2, 'g')
-plt.title('Sygnał po filtracji FIR 2')
-plt.xlabel('Czas [s]')
-plt.ylabel('Amplituda')
-
-plt.subplot(3, 2, 6)
-plt.magnitude_spectrum(filtered_signal_fir2, Fs=fs, color='green')
-plt.title('Spektrum sygnału po filtracji FIR 2')
-
-plt.tight_layout()
-
-# Plotowanie charakterystyk częstotliwościowych filtrów FIR
-plt.figure(figsize=(12, 6))
-
-plt.plot(0.5 * nyquist_rate * w1 / np.pi, 20 * np.log10(np.abs(h1)), 'b', label='FIR 1')
-plt.plot(freq_fir1, 20 * np.log10(np.abs(h1)), 'b--')
-plt.plot(freq_fir2, 20 * np.log10(np.abs(h2)), 'r', label='FIR 2')
-plt.plot([19000, 19000], [-60, 10], 'ko--', label='Pilotażowa częstotliwość 19000 Hz')
-plt.plot([0, 25000], [-40, -40], "g--")
-plt.ylim(-100, 10)
-plt.title("Charakterystyka częstotliwościowa filtrów FIR")
-plt.xlabel('Częstotliwość [Hz]')
-plt.ylabel('Amplituda [dB]')
-plt.legend()
-plt.grid()
+filtered_signal_fir1 = signal.lfilter(fir1, 1, y)
+filtered_signal_fir2 = signal.lfilter(fir2, 1, y)
+plt.figure()
+f, A1 = signal.welch(filtered_signal_fir1, fs=fs, window='hamming', nperseg=1024)
+plt.plot(f, np.log10(np.abs(A1)))
+plt.figure()
+f, A2 = signal.welch(filtered_signal_fir2, fs=fs, window='hamming', nperseg=1024)
+plt.plot(f, np.log10(np.abs(A2)))
 plt.show()
