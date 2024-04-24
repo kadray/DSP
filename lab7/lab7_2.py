@@ -49,7 +49,6 @@ num_taps = 101  # Długość odpowiedzi impulsowej filtra FIR
 # Projektowanie filtru FIR 1
 nyquist_cutoff = cutoff_1 / (0.5 * fs)
 fir1 = signal.firwin(num_taps, nyquist_cutoff, window='hamming')
-
 # Filtr pasmowoprzepustowy w obrębie 19 kHz
 
 f_pilot = 19000  # Częstotliwość sygnału pilota
@@ -87,8 +86,8 @@ filtered_signal_fir1 = signal.lfilter(fir1, 1, y)
 filtered_signal_fir2 = signal.lfilter(fir2, 1, y)
 plt.figure(figsize=(10, 6))
 f, A1 = signal.welch(filtered_signal_fir1, fs=fs, window='hamming', nperseg=1024)
-plt.plot(f, np.log10(np.abs(A1)))
+plt.plot(f, 20*np.log10(np.abs(A1)))
 plt.figure(figsize=(10, 6))
 f, A2 = signal.welch(filtered_signal_fir2, fs=fs, window='hamming', nperseg=1024)
-plt.plot(f, np.log10(np.abs(A2)))
+plt.plot(f, 20*np.log10(np.abs(A2)))
 plt.show()
