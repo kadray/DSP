@@ -36,7 +36,7 @@ y_audio = signal.lfilter(b_down, 1, y)
 
 # Widmo mocy sygnału demodulowanego
 frequencies, psd = signal.welch(y, fs=bwSERV*2, window='hamming', nperseg=1024)
-plt.figure()
+plt.figure(figsize=(10, 6))
 plt.plot(frequencies, np.log10(np.abs(psd)))
 plt.title('Widmo mocy sygnału demodulowanego')
 plt.xlabel('Częstotliwość [Hz]')
@@ -63,21 +63,19 @@ width = f_bandwidth / nyquist
 fir2 = signal.firwin(taps_fir2, [cutoff - 0.5 * width, cutoff + 0.5 * width], pass_zero=False)
 
 # Obliczenie odpowiedzi filtrów w dziedzinie częstotliwości
-w_lowpass, h_lowpass = signal.freqz(fir1, worN=1599999)
-w_bandpass, h_bandpass = signal.freqz(fir2, worN=1599999)
-freq_fir1 = (fs * 0.5 / np.pi) * w_lowpass
-freq_fir2 = (fs * 0.5 / np.pi) * w_bandpass
+w_lowpass, h_lowpass = signal.freqz(fir1)
+w_bandpass, h_bandpass = signal.freqz(fir2)
 # Plot odpowiedzi filtrów w dziedzinie częstotliwości
 plt.figure(figsize=(10, 6))
 
-plt.plot(0.5 * fs * w_lowpass / np.pi, np.log10(np.abs(h_lowpass)), label='Filtr dolnoprzepustowy')
+plt.plot(0.5 * fs * w_lowpass / np.pi, 20*np.log10(np.abs(h_lowpass)), label='Filtr dolnoprzepustowy')
 plt.title('Charakterystyka amplitudowa filtru dolnoprzepustowego')
 plt.xlabel('Częstotliwość [Hz]')
 plt.ylabel('Wzmocnienie')
 plt.legend()
 
 plt.figure(figsize=(10, 6))
-plt.plot(0.5 * fs * w_bandpass / np.pi, np.log10(np.abs(h_bandpass)), label='Filtr pasmowoprzepustowy')
+plt.plot(0.5 * fs * w_bandpass / np.pi, 20*np.log10(np.abs(h_bandpass)), label='Filtr pasmowoprzepustowy')
 plt.title('Charakterystyka amplitudowa filtru pasmowoprzepustowego')
 plt.xlabel('Częstotliwość [Hz]')
 plt.ylabel('Wzmocnienie')
@@ -87,10 +85,10 @@ plt.legend()
 # Filtracja sygnału przez oba filtry
 filtered_signal_fir1 = signal.lfilter(fir1, 1, y)
 filtered_signal_fir2 = signal.lfilter(fir2, 1, y)
-plt.figure()
+plt.figure(figsize=(10, 6))
 f, A1 = signal.welch(filtered_signal_fir1, fs=fs, window='hamming', nperseg=1024)
 plt.plot(f, np.log10(np.abs(A1)))
-plt.figure()
+plt.figure(figsize=(10, 6))
 f, A2 = signal.welch(filtered_signal_fir2, fs=fs, window='hamming', nperseg=1024)
 plt.plot(f, np.log10(np.abs(A2)))
 plt.show()
