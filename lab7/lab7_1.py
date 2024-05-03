@@ -8,7 +8,7 @@ df = 200   # Szerokość pasma [Hz]
 fc = 300   # Częstotliwość środkowa pasma [Hz]
 
 # Długość filtru (ilość próbek)
-N = 128    # lub N = 129
+N = 129    # lub N = 129
 #zmienia się symetria, dla 129 filtr jest symetryczny bo mamy wartość środkową
 f_low = fc - df / 2
 f_high = fc + df / 2

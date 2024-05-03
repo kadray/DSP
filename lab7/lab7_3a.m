@@ -19,7 +19,7 @@ fpl=19000;
 % s = fread(f, 2*N, 'uint8');
 % fclose(f);
 % wideband_signal = s(1:2:end) + sqrt(-1)*s(2:2:end); clear s;
-% fpl=19065.25;
+% fpl=19030;
 
 %% Początkowe przetworzenie sygnału
 wideband_signal_shifted = wideband_signal .* exp(-sqrt(-1)*2*pi*fc/fs*[0:N-1]');
