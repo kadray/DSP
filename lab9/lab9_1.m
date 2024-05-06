@@ -19,22 +19,26 @@ harmonic1 = A1 * sin(2 * pi * f1 * time);
 harmonic2 = A2 * sin(2 * pi * f2 * time);
 SNR = [10, 20, 40];
 dref = harmonic1 + harmonic2;
-d = awgn( dref, SNR(1), 'measured' ); % WE: sygnał odniesienia dla sygnału x
-x = [ d(1) d(1:end-1) ]; % WE: sygnał filtrowany, teraz opóźniony d
-M = 1; % długość filtru
-mi = 1;% współczynnik szybkości adaptacji
+for k = 1:3
+    d = awgn( dref, SNR(k), 'measured'); % WE: sygnał odniesienia dla sygnału x
+    x = [ d(1) d(1:end-1) ]; % WE: sygnał filtrowany, teraz opóźniony d
+    M = 16; % długość filtru
+    mi = 0.0006;% współczynnik szybkości adaptacji
 
-y = []; e = []; % sygnały wyjściowe z filtra
-bx = zeros(M,1); % bufor na próbki wejściowe x
-h = zeros(M,1); % początkowe (puste) wagi filtru
+    y = []; e = []; % sygnały wyjściowe z filtra
+    bx = zeros(M,1); % bufor na próbki wejściowe x
+    h = zeros(M,1); % początkowe (puste) wagi filtru
 
-for n = 1 : length(x)
-    bx = [ x(n); bx(1:M-1) ]; % pobierz nową próbkę x[n] do bufora
-    y(n) = h' * bx; % oblicz y[n] = sum( x .* bx) – filtr FIR
-    e(n) = d(n) - y(n); % oblicz e[n]
-    h = h + mi * e(n) * bx; % LMS
-    % h = h + mi * e(n) * bx /(bx'*bx); % NLMS
+    for n = 1 : length(x)
+        bx = [ x(n); bx(1:M-1) ]; % pobierz nową próbkę x[n] do bufora
+        y(n) = h' * bx; % oblicz y[n] = sum( x .* bx) – filtr FIR
+        e(n) = d(n) - y(n); % oblicz e[n]
+        h = h + mi * e(n) * bx; % LMS
+        % h = h + mi * e(n) * bx /(bx'*bx); % NLMS
+    end
+    subplot(1, 3, k)
+    plot( time, d, "r",time, y, "g", time, dref, "b--")
+    title("SNR = "+ SNR(k)+ "dB")
+    legend( "Zaszumiany sygnał","Odszumiony sygnał", "Referencyjny sygnał")
+    xlim([0.54, 0.56])
 end
-snr(d, h)
-figure()
-plot(time, d)
