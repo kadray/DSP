@@ -22,8 +22,8 @@ dref = harmonic1 + harmonic2;
 for k = 1:3
     d = awgn( dref, SNR(k), 'measured'); % WE: sygnał odniesienia dla sygnału x
     x = [ d(1) d(1:end-1) ]; % WE: sygnał filtrowany, teraz opóźniony d
-    M = 16; % długość filtru
-    mi = 0.0006;% współczynnik szybkości adaptacji
+    M = 100; % długość filtru
+    mi = 0.00025;% współczynnik szybkości adaptacji
 
     y = []; e = []; % sygnały wyjściowe z filtra
     bx = zeros(M,1); % bufor na próbki wejściowe x
@@ -36,9 +36,15 @@ for k = 1:3
         h = h + mi * e(n) * bx; % LMS
         % h = h + mi * e(n) * bx /(bx'*bx); % NLMS
     end
+    %% liczenie SNR
+    N = length(dref);
+    Ps = sum(dref.^2) / N;
+    Pn = sum((dref-y).^2) / N;
+    output_snr = 10 * log10(Ps / Pn);
+
     subplot(1, 3, k)
     plot( time, d, "r",time, y, "g", time, dref, "b--")
-    title("SNR = "+ SNR(k)+ "dB")
+    title("SNR = "+ output_snr + "dB")
     legend( "Zaszumiany sygnał","Odszumiony sygnał", "Referencyjny sygnał")
     xlim([0.54, 0.56])
 end
