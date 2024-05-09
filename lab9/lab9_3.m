@@ -13,7 +13,7 @@ phase_offset = pi/4; % Przesunięcie fazowe o pi/4 radianów (możesz zmienić n
 
 %% punkty 1 i 2
 p = sin(2*pi*fpilot*t + phase_offset);
-p = awgn(p, 0, 'measured'); 
+p = awgn(p, 20, 'measured'); 
 
 % %% punkt 3
 % delta_f = df * sin(2*pi*fm*t);
@@ -30,25 +30,22 @@ for n = 1 : length(p)
     theta(n+1) = theta(n) + freq + alpha*perr;
     freq = freq + beta*perr;
 end
-    
+
 % Obliczenie składowych sygnału
 c1 = cos((1/19)*theta(1:end-1));
-c19 = cos(theta(1:end-1));
-c38 = cos(2*theta(1:end-1));
 c57 = cos(3*theta(1:end-1));
 
 % Sumowanie sygnałów
-signal_sum = c1 + c19 + c38 + c57;
+signal_sum = c1;
 fft_signal = fft(signal_sum);
 
 % Plot in frequency domain
 Fs = fs; % Sampling frequency
 N = length(signal_sum); % Length of signal
 f = linspace(0, Fs, N); % Frequency vector
-f_khz = f / 1000; % Convert frequencies to kHz
 
 figure;
-plot(f_khz, abs(fft_signal));
+plot(f, abs(fft_signal));
 title('FFT of Sum of Frequencies');
 xlabel('Frequency (kHz)');
 ylabel('Magnitude');

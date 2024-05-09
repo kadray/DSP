@@ -8,7 +8,6 @@ x = audioread("mowa_2.wav");
 time=length(x);
 M = 8; % długość filtru
 mi = 0.2;% współczynnik szybkości adaptacji
-
 y = []; e = []; % sygnały wyjściowe z filtra
 bx = zeros(M,1); % bufor na próbki wejściowe x
 h = zeros(M,1); % początkowe (puste) wagi filtru
