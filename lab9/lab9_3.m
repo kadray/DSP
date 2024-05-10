@@ -16,8 +16,8 @@ p = sin(2*pi*fpilot*t + phase_offset);
 p = awgn(p, 20, 'measured'); 
 
 % %% punkt 3
-% delta_f = df * sin(2*pi*fm*t);
-% p = sin(2*pi*(fpilot + delta_f).*t + phase_offset);
+delta_f = df * sin(2*pi*fm*t);
+p = sin(2*pi*(fpilot + delta_f).*t + phase_offset);
 
 % Petla PLL z filtrem typu IIR do odtworzenia częstotliwości i fazy pilota [7]
 % i na tej podstawie sygnałów nośnych: symboli c1, stereo c38 i danych RDS c57
@@ -32,11 +32,11 @@ for n = 1 : length(p)
 end
 
 % Obliczenie składowych sygnału
-c1 = cos((1/19)*theta(1:end-1));
+c19 = cos(theta(1:end-1));
 c57 = cos(3*theta(1:end-1));
 
 % Sumowanie sygnałów
-signal_sum = c1;
+signal_sum = c19;
 fft_signal = fft(signal_sum);
 
 % Plot in frequency domain

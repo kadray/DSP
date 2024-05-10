@@ -25,6 +25,12 @@ for k = 1:3
     M = 100; % długość filtru
     mi = 0.00025;% współczynnik szybkości adaptacji
 
+    %% Zwiększenie M - większy szum
+    %% Zmniejszenie M - przesunięcie o fazę
+
+    %% Zwiększenie mi - większy szum
+    %% Zmniejszenie mi - zmniejszenie amplitudy
+
     y = []; e = []; % sygnały wyjściowe z filtra
     bx = zeros(M,1); % bufor na próbki wejściowe x
     h = zeros(M,1); % początkowe (puste) wagi filtru
@@ -34,7 +40,7 @@ for k = 1:3
         y(n) = h' * bx; % oblicz y[n] = sum( x .* bx) – filtr FIR
         e(n) = d(n) - y(n); % oblicz e[n]
         h = h + mi * e(n) * bx; % LMS
-        % h = h + mi * e(n) * bx /(bx'*bx); % NLMS
+        %h = h + mi * e(n) * bx /(bx'*bx); % NLMS
     end
     %% liczenie SNR
     N = length(dref);
@@ -46,5 +52,6 @@ for k = 1:3
     plot( time, d, "r",time, y, "g", time, dref, "b--")
     title("SNR = "+ output_snr + "dB")
     legend( "Zaszumiany sygnał","Odszumiony sygnał", "Referencyjny sygnał")
-    xlim([0.54, 0.56])
+    xlim([0.54, 0.55])
+    ylim([0.5, 2])
 end

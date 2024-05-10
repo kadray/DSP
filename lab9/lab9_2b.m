@@ -27,5 +27,4 @@ plot(dref, "b") %% czyste Sa dla porównania
 hold on
 plot(e, "g") %% przefiltrowane Sa
 
-
 soundsc(e)
