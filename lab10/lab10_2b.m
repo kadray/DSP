@@ -50,9 +50,9 @@ for  nr = 1 : Nramek
     offset=20; rmax=max( r(offset : Mlen) );	   % znajdź maksimum funkcji autokorelacji
     imax=find(r==rmax);								   % znajdź indeks tego maksimum
     if ( rmax > 0.35*r(1) ) T=imax; else T=0; end % głoska dźwięczna/bezdźwięczna?
+    T=2*T;
     if (T>80) T=round(T/2); end							% znaleziono drugą podharmoniczną
     lpc=[lpc; T; wzm; a; ];								% zapamiętaj wartości parametrów
-    
     % SYNTEZA - odtwórz na podstawie parametrów ----------------------------------------------------------------------
     %T = 80;                                        % usuń pierwszy znak "%" i ustaw: T = 80, 50, 30, 0 (w celach testowych)
     if (T~=0) gdzie=gdzie-Mstep; end					% przesuń pobudzenie dźwięczne

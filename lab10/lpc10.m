@@ -5,7 +5,7 @@
 
 clear all; clf;
 
-[x,fpr,Nbits]=wavread('mowa.wav');	      % wczytaj sygna� mowy (ca�y)
+[x,fpr]=audioread('mowa1.wav');	      % wczytaj sygna� mowy (ca�y)
 plot(x); title('sygna� mowy'); pause	% poka� go
 soundsc(x,fpr);								% oraz odtw�rz na g�o�nikach (s�uchawkach)
 

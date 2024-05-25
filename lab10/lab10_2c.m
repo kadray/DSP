@@ -54,7 +54,7 @@ for  nr = 1 : Nramek
     lpc=[lpc; T; wzm; a; ];								% zapamiętaj wartości parametrów
     
     % SYNTEZA - odtwórz na podstawie parametrów ----------------------------------------------------------------------
-    %T = 80;                                        % usuń pierwszy znak "%" i ustaw: T = 80, 50, 30, 0 (w celach testowych)
+    T = 80;                                        % usuń pierwszy znak "%" i ustaw: T = 80, 50, 30, 0 (w celach testowych)
     if (T~=0) gdzie=gdzie-Mstep; end					% przesuń pobudzenie dźwięczne
     for n=1:Mstep
         % T = 70; % 0 lub > 25 - w celach testowych

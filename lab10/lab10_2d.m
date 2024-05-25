@@ -1,6 +1,7 @@
 clc; clear all; clf; close all;
 
 [x,fpr]=audioread('mowa1.wav');% wczytaj sygnał mowy (cały)
+[cv, ~]=audioread('coldvox.wav');
 plot(x); title('sygnał mowy');	% pokaż go
 							% oraz odtwórz na głośnikach (słuchawkach)
 
@@ -59,8 +60,8 @@ for  nr = 1 : Nramek
     for n=1:Mstep
         % T = 70; % 0 lub > 25 - w celach testowych
         if( T==0)
-            pob=2*(rand(1,1)-0.5);
-            %pob=cv(n);
+            %pob=2*(rand(1,1)-0.5);
+            pob=cv(n);
             gdzie=(3/2)*Mstep+1;			% pobudzenie szumowe
         else
             if (n==gdzie) 
