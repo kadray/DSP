@@ -1,6 +1,6 @@
-clear;
+clear all;
 close all;
-
+clc
 % Parametry sygnału
 fs = 8000;  % Częstotliwość próbkowania [Hz]
 t = 1;      % Czas trwania [s]
@@ -29,7 +29,7 @@ for k = 1:3
     %% Zmniejszenie M - przesunięcie o fazę
 
     %% Zwiększenie mi - większy szum
-    %% Zmniejszenie mi - zmniejszenie amplitudy
+    %% Zmniejszenie mi - wypłaszczanie sygnału
 
     y = []; e = []; % sygnały wyjściowe z filtra
     bx = zeros(M,1); % bufor na próbki wejściowe x

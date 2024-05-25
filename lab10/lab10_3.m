@@ -55,8 +55,19 @@ for  nr = 1 : Nramek
     a=-inv(R)*rr;											% oblicz wsp�czynniki filtra predykcji
     wzm=r(1)+r(2:Np+1)*a;									% oblicz wzmocnienie
     H=freqz(1,[1;a]);										% oblicz jego odp. cz�stotliwo�ciow�
-    H=1/H
 %     subplot(413); plot(abs(H)); title('widmo filtra traktu g�osowego');
+    if ( T~=0)
+        resztkowy = filter([1;a], 1, x(n));
+        figure; subplot(2, 1, 1); plot(resztkowy);
+        df=(fpr/length(resztkowy))/2; 
+        f = df * (0:length(resztkowy)-1);
+        Reszt = fft(resztkowy);
+        [~,maxpos]=max(Reszt);
+        T=1/(2*pi*f(maxpos));
+        %subplot(2, 1, 2); plot(f, Reszt);
+        
+    end
+    
     lpc=[lpc; T; wzm; a; ];								% zapami�taj warto�ci parametr�w
     
     % SYNTEZA - odtw�rz na podstawie parametr�w ----------------------------------------------------------------------
@@ -66,7 +77,7 @@ for  nr = 1 : Nramek
         % T = 70; % 0 lub > 25 - w celach testowych
         if( T==0)
             %pob=2*(rand(1,1)-0.5);
-            pob=x(n);
+            pob=cv(n);
             gdzie=(3/2)*Mstep+1;			% pobudzenie szumowe
         else
             pob=resztkowy(n);           %wykorzystnie sygna³u resztkowego

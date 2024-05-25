@@ -56,17 +56,7 @@ for  nr = 1 : Nramek
     wzm=r(1)+r(2:Np+1)*a;									% oblicz wzmocnienie
     H=freqz(1,[1;a]);										% oblicz jego odp. cz�stotliwo�ciow�
     subplot(413); plot(abs(H)); title('widmo filtra traktu g�osowego');
-%     if ( T~=0)
-%         resztkowy = filter([1;a], 1, x(n));
-%         figure; subplot(2, 1, 1); plot(resztkowy);
-%         df=(fpr/length(resztkowy))/2; 
-%         f = df * (0:length(resztkowy)-1);
-%         Reszt = fft(resztkowy);
-%         [~,maxpos]=max(Reszt);
-%         T=1/(2*pi*f(maxpos));
-%         %subplot(2, 1, 2); plot(f, Reszt);
-%         
-%     end
+
     
     lpc=[lpc; T; wzm; a; ];								% zapami�taj warto�ci parametr�w
     
