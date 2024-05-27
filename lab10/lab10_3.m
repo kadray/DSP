@@ -4,7 +4,6 @@
 % ----------------------------------------------------------
 
 clear all; clf; close all;
-
 [x,fpr]=audioread('mowa1.wav');% wczytaj sygna� mowy (ca�y)
 [cv, fpr2] = audioread('coldvox.wav');
 
@@ -32,16 +31,16 @@ for  nr = 1 : Nramek
     bx = x(n);
     
     
-    
     % ANALIZA - wyznacz parametry modelu ---------------------------------------------------
     bx = bx - mean(bx);  % usu� warto�� �redni�
     for k = 0 : Mlen-1
         r(k+1) = sum( bx(1 : Mlen-k) .* bx(1+k : Mlen) ); % funkcja autokorelacji
     end
-    
-%     subplot(411); plot(n,bx); title('fragment sygna�u mowy');
-%     subplot(412); plot(r); title('jego funkcja autokorelacji');
-    
+    if (nr==20 || nr==470)
+        figure;
+        subplot(411); plot(n,bx); title('fragment sygnału mowy');
+        subplot(412); plot(r); title('jego funkcja autokorelacji');
+    end
     offset=20; rmax=max( r(offset : Mlen) );	   % znajd� maksimum funkcji autokorelacji
     imax=find(r==rmax);								   % znajd� indeks tego maksimum
     if ( rmax > 0.35*r(1) ) T=imax; else T=0; end % g�oska d�wi�czna/bezd�wi�czna?
@@ -55,17 +54,16 @@ for  nr = 1 : Nramek
     a=-inv(R)*rr;											% oblicz wsp�czynniki filtra predykcji
     wzm=r(1)+r(2:Np+1)*a;									% oblicz wzmocnienie
     H=freqz(1,[1;a]);										% oblicz jego odp. cz�stotliwo�ciow�
-%     subplot(413); plot(abs(H)); title('widmo filtra traktu g�osowego');
+    if (nr==20 || nr==470)
+        subplot(413); plot(abs(H)); title('widmo filtra traktu głosowego');
+    end
     if ( T~=0)
         resztkowy = filter([1;a], 1, x(n));
-        figure; subplot(2, 1, 1); plot(resztkowy);
         df=(fpr/length(resztkowy))/2; 
         f = df * (0:length(resztkowy)-1);
         Reszt = fft(resztkowy);
         [~,maxpos]=max(Reszt);
-        T=1/(2*pi*f(maxpos));
-        %subplot(2, 1, 2); plot(f, Reszt);
-        
+        T=1/(2*pi*f(maxpos));    
     end
     
     lpc=[lpc; T; wzm; a; ];								% zapami�taj warto�ci parametr�w
@@ -85,11 +83,13 @@ for  nr = 1 : Nramek
         ss(n)=wzm*pob-bs*a;		% filtracja �syntetycznego� pobudzenia
         bs=[ss(n) bs(1:Np-1) ];	% przesun�cie bufora wyj�ciowego
     end
-%     subplot(414); plot(ss); title('zsyntezowany fragment sygna�u mowy'); pause
+    if (nr==20 || nr==470)
+        subplot(414); plot(ss); title('zsyntezowany fragment sygnału mowy'); 
+    end
     s = [s ss];						% zapami�tanie zsyntezowanego fragmentu mowy
 end
 
-s=filter(1,[1 -0.9735],s); % filtracja (deemfaza) - filtr odwrotny - opcjonalny
+%s=filter(1,[1 -0.9735],s); % filtracja (deemfaza) - filtr odwrotny - opcjonalny
 
 figure; plot(s); title('mowa zsyntezowana');
 %soundsc(x,fpr); pause(1);
