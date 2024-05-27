@@ -1,49 +1,78 @@
-% Wczytaj dowolny plik .wav
-[x, fs] = audioread("DontWorryBeHappy.wav");
+close all; clear all;
 
-% Parametry
-N = 128; % Długość okna
+%% Dane
+[x, fs] = audioread('DontWorryBeHappy.wav');
+x = double(x);
+x = x(:, 1); % przetwarzamy lewy kanal
+%x = x(1:1024);
 
-% Okno analizy i syntezy
+%% Okno analizy i syntezy
+%N = 32; 
+N = 128;
 n = 0:N-1;
-h = sin(pi * (n + 0.5) / N)';
-
-% Macierz analizy
-A = zeros(N/2, N);
-for k = 0:(N/2-1)
-    for m = 0:(N-1)
-        A(k+1, m+1) = sqrt(4/N) * cos(2*pi/N * (m+0.5) * (m+0.5 + N/4));
-    end
-end
-
-% Macierz syntezy
-S = A';
-
-% Transformacja i rekonstrukcja
-x_len = length(x);
-y = zeros(size(x));
-
-% Przechodzenie przez sygnał w oknach
-for i = 1:N/2:x_len-N
-    x_segment = x(i:i+N-1);
-    X = A * (x_segment .* h);
-    y_segment = (S * X) .* h;
-    
-    % Dopasowanie długości segmentów
-    y_segment = y_segment(1:min(length(y_segment), N));
-    y(i:i+N-1) = y(i:i+N-1) + y_segment;
-end
-
-% Porównanie sygnałów
+window = sin(pi * (n + 0.5) / N);  % okno analizy i syntezy
+%% Q - współczynnik skalujący
+%Q = 100000; %% Błąd 3.4e-06
+Q=60;
 figure;
-subplot(2,1,1);
-plot(x);
-title('Oryginalny sygnał');
-subplot(2,1,2);
-plot(y);
-title('Zrekonstruowany sygnał');
+plot(n, window);
+hold all;
+grid;
+title("Okno analizy i syntezy");
+xlabel("Próbki"); ylabel("Amplituda");
 
-% Odtwarzanie dźwięku
-sound(x, fs);
-pause(length(x)/fs + 2);
-sound(y, fs);
+%% Macierz analizy Modified DCT
+A = zeros(N/2, N); 
+for k = 1:N/2 
+    A(k, :) = sqrt(4/N) * cos(2 * pi / N * (k - 1 + 0.5) * (n + 0.5 + N / 4));
+end
+
+%% Macierz syntezy 
+S = A'; % transponowana macierz analizy
+
+
+% Wypełnienie y i referencyjnego zerami o długości sygnału
+y = zeros(1, length(x));
+dref = y;
+for i = 1:N/2:length(x) - N
+    % Pobranie próbki o długości okna
+    sample = x(i:i+N-1);
+    % Okienkowanie; mnożenie z oknem
+    windowed = sample' .* window;
+    % Analiza; mnożenie z macierzą analizy
+    analyzed = A * windowed';
+    % Kwantyzacja
+    quantized = round(analyzed * Q);
+    % Synteza; mnożenie z macierzą syntezy
+    synthesized = S * quantized;
+    % Okienkowanie ponowne
+    dewindowed = window .* synthesized';
+    % Zapisywanie do sygnału
+    y(i:i+N-1) = y(i:i+N-1) + dewindowed;
+    
+    % Referencja bez kwantyzacji
+    synthesized = S * analyzed;
+    dewindowed = window .* synthesized';
+    dref(i:i+N-1) = dref(i:i+N-1) + dewindowed;
+end
+
+% Zmniejszanie amplitudy. Pomaga ukryć szumy
+y = y / Q;
+
+%% Błąd
+disp("Dla Q = "+ Q)
+disp("Maksymalny błąd: "+ max(abs(x - y')))
+disp("Średni błąd: "+ mean(abs(x - y')))
+
+%% Wykresy
+n = 1:length(x);
+
+figure;
+hold all;
+plot(n, x);
+plot(n, y);
+title('Sygnał oryginalny vs po odkodowaniu z MDCT');
+legend('Referencyjny', 'Zrekonstruowany');
+
+%% Słuchanie
+soundsc(y(1:300000), fs);
