@@ -10,6 +10,7 @@ d = x - a * [[0, 0]; x(1:end-1, :)]; % różnicowy sygnał predykcji
 
 % Kwantyzacja
 dq = lab11_quantize(d, 7);  % kwantyzator
+dq=d
 
 % DEKODER
 y = zeros(size(dq));  % inicjalizacja zrekonstruowanego sygnału
