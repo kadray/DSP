@@ -4,19 +4,21 @@ clc
 %% 3
 % generacja obrazów bazowych
 IM1 = zeros(128, 128);
-IM1(2, 10) = 1;
-im1 = idct2(IM1);
-
 IM2 = zeros(128, 128);
-IM2(7, 28) = 1;
-im2 = idct2(IM2);
-
 IM3 = zeros(128, 128);
-IM3(70, 120) = 1;
-im3 = idct2(IM3);
-
 IM4 = zeros(128, 128);
-IM4(111, 20) = 1;
+%% ---------------------
+IM1(2, 10) = 1;
+%% ---------------------
+IM2(10, 2) = 1;
+%% ---------------------
+IM3(21, 37) = 1;
+%% ---------------------
+IM4(32, 8) = 1;
+%% ---------------------
+im1 = idct2(IM1);
+im2 = idct2(IM2);
+im3 = idct2(IM3);
 im4 = idct2(IM4);
 
 figure;
@@ -64,22 +66,11 @@ title("Obraz sumaryczny");
 subplot(1,4,2);
 imshow(IM); title('DCT2 obrazu sumarycznego');
 
-% szukamy wspolrzednych 3-5 pikselow aby je potem moc wyzerowac
-for i = 1:length(IM)
-    for j = 1:length(IM)
-        if(abs(IM(i,j))>0.99)
-            fprintf('Zapalony piksel w: %d %d', i, j);
-            fprintf('\n');
-        end
-    end
-end
-
-% zostawiamy tylko jeden zapalony wspolczynnik
 % wyłaczanie pikseli
-IM(2, 10) = 0;          % IM 1
-IM(7, 28) = 0;          % IM 2
-% IM(70, 120) = 0;      % IM 3
-IM(111, 20) = 0;        % IM 4
+% IM(2, 10) = 0;
+% IM(10, 2) = 0;
+% IM(21, 37) = 0;
+% IM(32, 8) = 0;
 
 im = idct2(IM);
 subplot(1,4,3);

@@ -27,7 +27,7 @@ title("DCT obrazu b");
 %% Podpunkt A
 
 % Filtr LP/HP
-high = false;
+high = true;
 [M, N, K] = size(img2);
 
 % wartosci maski filtra LP w dziedzinie 2D-DCT
@@ -67,7 +67,7 @@ title("Obraz rekonstruowany a");
 
 %% Podpunkt B
 
-threshold = 10;
+threshold = 100;
 img2_dct2_b(abs(img2_dct2_b) < threshold) = 0;
 
 % plot

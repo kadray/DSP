@@ -4,37 +4,27 @@ clc
 %% 4. 
 img = imread('im2.png');    % wczytaj obraz
 img = double(img);
-
+%img(20, 10)=100;
 figure;
-subplot(1,4,1);
+subplot(1,2,1);
 imshow(img);
+
 title("Oryginalny obraz");
 
 % dct2
 img_dct2 = dct2(img);
 
-subplot(1,4,2);
+subplot(1,2,2);
 imshow(img_dct2);
-title("Matlabowe dct");
+title("dct2");
 
-% my dct 2D
-IMG = zeros(128, 128);
-for i = 1 : 128
-    row = img(i, :);
-    ROW = dct(row);
-    IMG(i, :) = ROW;
-end
 
-subplot(1,4,3);
-imshow(IMG);
-title("Pół mojego dct");
+figure;
+test = img;
+test(128,128)=0;
+test_dct=dct2(test);
+subplot(1, 2, 1);
+imshow(test);
+subplot(1, 2, 2)
+imshow(test_dct);
 
-for i = 1 : 128
-    col = IMG(:, i);
-    COL = dct(col);
-    IMG(:, i) = COL;
-end
-
-subplot(1,4,4);
-imshow(IMG);
-title("Moje dct");

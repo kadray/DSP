@@ -6,10 +6,10 @@ close all;
 
 % filtry w częstotliwości
 [M, N, ~] = size(img);
-K = 128;
+K = 32;
 H_LOW_PASS = myTriangleMask(M, N, K);
 
-K = 128;
+K = 1024-32;
 H_HIGH_PASS = ones(M, N) - myTriangleMask(M, N, K);
 
 figure;

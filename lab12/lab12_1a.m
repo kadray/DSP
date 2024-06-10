@@ -10,7 +10,7 @@ img_idct2 = idct2(img_dct2);    % wyznacz idct2 na dct2 (powrót do stanu z pocz
 % Petla szukajaca wspolczynnikow znaczacych
 for i = 1:length(img_dct2)
     for j = 1:length(img_dct2)
-        if(img_dct2(i,j)>10)
+        if(img_dct2(i,j)>100)
             fprintf('Wspolczynnik znaczacy: %d %d', i, j);
             fprintf('\n');
         end
