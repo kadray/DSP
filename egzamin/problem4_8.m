@@ -25,7 +25,7 @@ x3 = exp(-a3 * t.^2);
 X3 = (sqrt(pi/a3)*exp(-w.^2/(4*a3)));
 
 %% 4. Jednostronna eksponenta
-a4 = 1; 
+a4 = 10; 
 x4 = exp(-a4 * t) .* (t >= 0);
 X4 = (1./(a4+1j*w));
 
@@ -68,8 +68,7 @@ for k=1:7
     legend("Widmo ze wzoru", "Widmo z FFT")
     xlabel('Częstotliwość [Hz]'); ylabel('Amplituda [dB]');
     
-    % subplot(4, 1, 4); plot(t, ifft(ifftshift(X_list{k})), 'LineWidth', 1.5); hold on;
+    %figure
     % plot(t, ifft(fft_X), 'r--')
-    % legend("Odwrotna transformata ze wzoru", "Odwrotna transformata z FFT")
-    % title('Sygnał w dziedzinie czasu po odwrotnej transformacie');
+
 end

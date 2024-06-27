@@ -79,3 +79,6 @@ end
 figure;
 subplot(211); plot(t, x); grid; % sygnal wejsciowy x(n)
 subplot(212); plot(t, y); grid; % sygnal wyjsciowy y(n)
+k=Nx/2+1:Nx; f0 = fpr/(Nx/2); f=f0*(0:Nx/2-1);
+subplot(211); plot(f,20*log10(abs(2*fft(x(k)))/(Nx/2))); grid;
+subplot(212); plot(f,20*log10(abs(2*fft(y(k)))/(Nx/2))); grid;
