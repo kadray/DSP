@@ -3,10 +3,10 @@ close all
 clc
 % Wczytaj nagranie dźwiękowe
 [x, fs] = audioread('engine.wav');
-
+[x, fs] = audioread('bird.wav');
 % Odtwórz nagranie dźwiękowe
 soundsc(x, fs);
-
+pause(length(x)/fs + 1);
 % Oblicz współczynniki transformaty kosinusowej
 c = dct(x);
 
